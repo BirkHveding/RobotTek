@@ -1,4 +1,4 @@
-from sympy import *
+import sympy as *
 
 def skew(v):
     return Matrix([[0, -v[2], v[1]],
