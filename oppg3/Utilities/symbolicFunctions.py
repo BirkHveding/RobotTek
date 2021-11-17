@@ -1,4 +1,5 @@
 import sympy as sp
+import numpy as np
 
 def Ry_sym(theta):
     ct = sp.cos(theta)
@@ -100,3 +101,4 @@ def PsFromTsd(T_sd):
     #s er plassert nederst på roboten med positiv z oppover, altså ikke som i DH. Bør kanskje endres til å være lik DH 
     P_d = np.array([0,0,80,1])
     P_s = T_sd@P_d
+    return P_s
