@@ -36,9 +36,10 @@ def exp6(twist, theta):
     return T
 
 class Robot:
-    #Parameters: 
-    # Mlist: Pose of all joints in zero-config as homogenous transformation
-    # link_orient: orientation of link in next joints frame (including ground to Link1) ex: ['z', '-z', 'x', 'x', 'z','x']
+    '''## Parameters: 
+    Mlist: Pose of all joints in zero-config as homogenous transformation\n
+    link_orient: orientation of link in preceeding joints frame (including ground to Link1) ex: ['z', '-z', 'x', 'x', 'z','x']'''
+
     def __init__(self, Mlist, link_orient='x'):
         self.robotObjects = [o3d.geometry.TriangleMesh.create_coordinate_frame(size=75)]
         self.current_config = Mlist
@@ -112,8 +113,8 @@ class Robot:
 class Joint(Robot):
     def __init__(self):
         self.joint = o3d.geometry.TriangleMesh.create_cylinder(
-            radius=10, height=30)
-        self.coord = o3d.geometry.TriangleMesh.create_coordinate_frame(size=25)
+            radius=25, height=40)
+        self.coord = o3d.geometry.TriangleMesh.create_coordinate_frame(size=50)
         self.set_colour()
 
     def set_colour(self, colour=[0, 1, 0]):
@@ -129,20 +130,20 @@ class Link(Robot):
         self.lenght = lenght
 
         if (orient == 'x'):  # Defines link direction from preceeding joint
-            self.link = o3d.geometry.TriangleMesh.create_cylinder(radius=1, height=self.lenght).rotate(
+            self.link = o3d.geometry.TriangleMesh.create_cylinder(radius=2, height=self.lenght).rotate(
                 Ry_sym(np.pi/2)).translate(np.array([self.lenght/2, 0, 0]))
         elif (orient == 'y'):
-            self.link = o3d.geometry.TriangleMesh.create_cylinder(radius=1, height=self.lenght).rotate(
+            self.link = o3d.geometry.TriangleMesh.create_cylinder(radius=2, height=self.lenght).rotate(
                 Rx_sym(-np.pi/2)).translate(np.array([0, self.lenght/2, 0]))
         elif (orient == 'z'):
             self.link = o3d.geometry.TriangleMesh.create_cylinder(
-                radius=1, height=self.lenght).translate(np.array([0, 0, self.lenght/2]))
+                radius=2, height=self.lenght).translate(np.array([0, 0, self.lenght/2]))
         elif (orient == '-z'):
             self.link = o3d.geometry.TriangleMesh.create_cylinder(
-                radius=1, height=self.lenght).translate(np.array([0, 0, -self.lenght/2]))
+                radius=2, height=self.lenght).translate(np.array([0, 0, -self.lenght/2]))
         self.set_colour()
 
-    def set_colour(self, colour=[0, 0, 1]):
+    def set_colour(self, colour=[0, 0, 0]):
         self.link.paint_uniform_color(colour)
 
     def transform(self, T):
