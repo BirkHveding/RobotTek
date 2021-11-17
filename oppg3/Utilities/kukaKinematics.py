@@ -80,7 +80,7 @@ q4 = q[:,3] = M4[:3, 3]
 q5 = q[:,4] = M5[:3, 3]
 q6 = q[:,5] = M6[:3, 3]
 
-Slist = np.array(Slist_maker(om,q),dtype=float)
+Slist = Slist_maker(om,q)
 S1 = Slist[:,0]
 S2 = Slist[:,1]
 S3 = Slist[:,2]

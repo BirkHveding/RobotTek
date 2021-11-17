@@ -113,11 +113,11 @@ class Robot:
 class Joint(Robot):
     def __init__(self):
         self.joint = o3d.geometry.TriangleMesh.create_cylinder(
-            radius=25, height=40)
+            radius=15, height=35)
         self.coord = o3d.geometry.TriangleMesh.create_coordinate_frame(size=50)
         self.set_colour()
 
-    def set_colour(self, colour=[0, 1, 0]):
+    def set_colour(self, colour=[0, 0, 0]):
         self.joint.paint_uniform_color(colour)
 
     def transform(self, T):
