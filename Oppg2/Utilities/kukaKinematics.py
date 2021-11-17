@@ -1,3 +1,9 @@
+############################
+#Kinematics for Kuka robot, includes:
+# M
+# Mlist - consisting of M for each joint as if it was the end-effector joint
+# Slist and S1-S6
+
 import sympy as sp
 import numpy as np
 
@@ -55,7 +61,7 @@ M5=sp.Matrix([[1, 0, 0, 455+25+420],
              [0, 0, 0, 1]])
 M6=sp.Matrix([[0, 0, -1, 455+25+420+50], ##OBS lagt til 50 for å se endeffector
              [0, 1, 0, 0],
-             [1, 0, 0, 400],#400
+             [1, 0, 0, 400],
              [0, 0, 0, 1]])
 Mlist = np.array([M1,M2,M3,M4,M5,M6], dtype=float)
 
@@ -75,4 +81,9 @@ q5 = q[:,4] = M5[:3, 3]
 q6 = q[:,5] = M6[:3, 3]
 
 Slist = Slist_maker(om,q)
-
+S1 = Slist[:,0]
+S2 = Slist[:,1]
+S3 = Slist[:,2]
+S4 = Slist[:,3]
+S5 = Slist[:,4]
+S6 = Slist[:,5]
