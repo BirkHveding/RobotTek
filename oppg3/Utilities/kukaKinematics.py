@@ -59,7 +59,7 @@ M5=sp.Matrix([[1, 0, 0, 455+25+420],
              [0, 0, 1, 0],
              [0, -1, 0, 400+35],
              [0, 0, 0, 1]])
-M6=sp.Matrix([[0, 0, -1, 455+25+420+50], ##OBS lagt til 50 for å se endeffector
+M6=sp.Matrix([[0, 0, -1, 455+25+420+80], ##OBS lagt til 50 for å se endeffector
              [0, 1, 0, 0],
              [1, 0, 0, 400+35],
              [0, 0, 0, 1]])
@@ -80,7 +80,7 @@ q4 = q[:,3] = M4[:3, 3]
 q5 = q[:,4] = M5[:3, 3]
 q6 = q[:,5] = M6[:3, 3]
 
-Slist = Slist_maker(om,q)
+Slist = np.array(Slist_maker(om,q),dtype=float)
 S1 = Slist[:,0]
 S2 = Slist[:,1]
 S3 = Slist[:,2]
