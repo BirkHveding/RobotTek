@@ -2,6 +2,38 @@ import open3d as o3d
 import numpy as np
 import modern_robotics as mr
 from open3d.web_visualizer import draw
+import sympy as sp
+
+def Ry_sym(theta):
+    ct = sp.cos(theta)
+    st = sp.sin(theta)
+    R = sp.Matrix([[ct, 0.0, st], [0.0, 1.0, 0.0], [-st, 0, ct]])
+    return R
+
+def Rx_sym(theta):
+    ct = sp.cos(theta)
+    st = sp.sin(theta)
+    R = sp.Matrix([[1.0, 0.0, 0.0], [0.0, ct, -st], [0.0, st, ct]])
+    return R 
+
+def skew(v):
+    return sp.Matrix([[0, -v[2], v[1]],
+                    [v[2], 0, -v[0]],
+                    [-v[1], v[0], 0]])
+                    
+def exp3(omega, theta):
+    omega = skew(omega)
+    R = sp.eye(3) + sp.sin(theta) * omega + (1 - sp.cos(theta)) * omega * omega
+    return R
+
+def exp6(twist, theta):
+    omega = skew(twist[:3])
+    v = sp.Matrix(twist[3:])
+    T = sp.eye(4)
+    T[:3,:3] = exp3(twist[:3], theta)
+    T[:3,3] = (sp.eye(3) * theta + (1 - sp.cos(theta)) * omega +
+              (theta-sp.sin(theta)) * omega * omega) * v
+    return T
 
 class Robot:
     #Parameters: 

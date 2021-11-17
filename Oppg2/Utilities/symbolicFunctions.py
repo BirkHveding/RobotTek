@@ -10,7 +10,7 @@ def Rx_sym(theta):
     ct = sp.cos(theta)
     st = sp.sin(theta)
     R = sp.Matrix([[1.0, 0.0, 0.0], [0.0, ct, -st], [0.0, st, ct]])
-    return R
+    return R 
 
 def skew(v):
     return sp.Matrix([[0, -v[2], v[1]],
@@ -38,6 +38,32 @@ def Ad(T):
     AdT[3:, 3:] = R
     AdT[3:, :3] = skew(T[:3, 3]) * R
     return AdT
+
+def calc_v(omega_mat, q_mat):
+    #omega_mat and q_mat of type matrix with q_i & omega_i as columns
+    #Returns v_mat in same type/format
+    assert len(omega_mat) == len(q_mat)
+    
+    n_joints = omega_mat.shape[1] 
+    v_mat = sp.zeros(3, n_joints)      
+
+    for i in range(n_joints):
+        v_mat[:,i] = (-skew(omega_mat.col(i)) * q_mat.col(i))
+    return v_mat
+
+def Slist_maker(omega_mat, q_mat): #omega_mat and q_mat of type matrix with q_i & omega_i as columns
+    #Returns v_mat in same type/format
+    v_mat = calc_v(omega_mat, q_mat)    
+    n_joints = omega_mat.shape[1]
+    Slist = sp.zeros(6, n_joints)
+    
+    for i in range(n_joints):
+        Slist[:3,i] = omega_mat[:,i]
+        Slist[3:,i] = v_mat[:,i]
+    return Slist
+
+
+
 
 #____DH-functions____
 
