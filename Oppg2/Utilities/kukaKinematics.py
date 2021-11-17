@@ -1,6 +1,34 @@
 import sympy as sp
 import numpy as np
-from symbolicFunctions import Slist_maker
+
+def skew(v):
+    return sp.Matrix([[0, -v[2], v[1]],
+                    [v[2], 0, -v[0]],
+                    [-v[1], v[0], 0]])
+
+def Slist_maker(omega_mat, q_mat): #omega_mat and q_mat of type matrix with q_i & omega_i as columns
+    #Returns v_mat in same type/format
+    v_mat = calc_v(omega_mat, q_mat)    
+    n_joints = omega_mat.shape[1]
+    Slist = sp.zeros(6, n_joints)
+    
+    for i in range(n_joints):
+        Slist[:3,i] = omega_mat[:,i]
+        Slist[3:,i] = v_mat[:,i]
+    return Slist
+
+def calc_v(omega_mat, q_mat):
+    #omega_mat and q_mat of type matrix with q_i & omega_i as columns
+    #Returns v_mat in same type/format
+    assert len(omega_mat) == len(q_mat)
+    
+    n_joints = omega_mat.shape[1] 
+    v_mat = sp.zeros(3, n_joints)      
+
+    for i in range(n_joints):
+        v_mat[:,i] = (-skew(omega_mat.col(i)) * q_mat.col(i))
+    return v_mat
+
 
 
 M1=sp.Matrix([[0, 1, 0, 0],
@@ -46,5 +74,5 @@ q4 = q[:,3] = M4[:3, 3]
 q5 = q[:,4] = M5[:3, 3]
 q6 = q[:,5] = M6[:3, 3]
 
-S_list = Slist_maker(om,q)
+Slist = Slist_maker(om,q)
 
