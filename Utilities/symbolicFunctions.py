@@ -101,6 +101,7 @@ def Jb_maker(Blist, theta_list):
     
     return Jb
 
+jointLimits = np.array([[-180, 180], [-190, 45], [-120, 156], [-180, 180], [-90, 90], [-180, 180]]) #Assuming joint 5 has limits [-90, 90]
 def applyJointLim(jointLimits, thetas):
     ''' Check if Inverse Kinematics solution (thetas) is within jointlimits\n 
     PARAMETERS:
@@ -110,9 +111,9 @@ def applyJointLim(jointLimits, thetas):
     jointLimits = np.deg2rad(jointLimits) 
     thetas %= 2*np.pi #Post processing: all thetas in [0,2*pi)
 
-    for theta, i in enumerate(thetas):
-        if jointLimits[i][1] < theta < jointLimits[i][0]:
-            print("Joint number: ", i+1, "is not within the limits")
+    for i, theta in enumerate(thetas):
+        if (jointLimits[i][1] < theta) | (theta < jointLimits[i][0]):
+            print("Joint number: {} is outside limits. Theta: {} | limits: {}".format(i+1, np.rad2deg(float(theta)), np.rad2deg(jointLimits[i])))
             return False
     return True
 
