@@ -94,11 +94,9 @@ def transZ(d_i):
     trA[2,3] =  d_i
     return trA
 
-def PsFromTsd(T_sd):
-    #Finner Ps fra T_sd
-    #T_sd gir konfigurasjonen vi vil ha end-effector framen, B, i.
-    #B, og derav også M, er lik som i DH
-    #s er plassert nederst på roboten med positiv z oppover, altså ikke som i DH. Bør kanskje endres til å være lik DH 
+
+#IK functions
+def ps_from_Tsd(T_sd):
     P_d = np.array([0,0,80,1])
     P_s = T_sd@P_d
     return P_s
