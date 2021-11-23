@@ -38,22 +38,26 @@ def exp6(twist, theta):
 class Robot:
     '''## Parameters: 
     Mlist: Pose of all joints in zero-config as homogenous transformation\n
-    link_orient: orientation of link in preceeding joints frame (including ground to Link1) ex: ['z', '-z', 'x', 'x', 'z','x']'''
+    link_orient: orientation of link in preceeding joints frame (including ground to Link1) ex: ['z', '-z', 'x', 'x', 'z','x']\n
+    endEffectorOffset: offset of endeffector from last link given as a Homogeneous transformation matrix. Default no offset'''
 
-    def __init__(self, Mlist, link_orient='x'):
+    def __init__(self, Mlist, link_orient='x', endEffectorOffset = sp.Matrix(sp.eye(4))):
         self.robotObjects = [o3d.geometry.TriangleMesh.create_coordinate_frame(size=75)]
-        self.current_config = Mlist
+        self.current_config = Mlist #list of T's giving pose for all joints
         self.Mlist = Mlist
         self.num_joints = len(Mlist)
         self.num_links = len(Mlist)
         self.length_links = self.findLinkLengths(Mlist)
         self.link_orient = ['x']*(self.num_links+1) if link_orient == 'x' else link_orient #link attached to preceeding joints x-axis by default
+        self.Tnb = endEffectorOffset
 
         self.joints = []  # Of class Joint
         self.links = []  # Of class Link
         self.make_robot_objects()  # create all objects of robot (links, frames, joints)
         self.update_mesh_list()
         self.__transform(Mlist) # Transforms all objects from {s} to zero-config
+
+
 
 # Calculates link lengths based on M
     def findLinkLengths(self, Mlist):
@@ -72,6 +76,12 @@ class Robot:
             self.joints.append(Joint())
         for i in range(self.num_links):
             self.links.append(Link(self.length_links[i], self.link_orient[i]))
+        
+        if self.Tnb != sp.Matrix(sp.eye(4)): #True if endeffector-offset is given
+            self.endEffectorObject = o3d.geometry.TriangleMesh.create_coordinate_frame(size=50)
+            self.robotObjects.append(self.endEffectorObject)
+        else: self.endEffectorObject = False
+
 
     def update_mesh_list(self):
         for Joint in self.joints:
@@ -85,6 +95,7 @@ class Robot:
         for T in self.current_config:
             T_origin.append(mr.TransInv(T))
         self.__transform(T_origin)
+
         return
 
     def transform(self, Slist, thetas):
@@ -103,8 +114,10 @@ class Robot:
         for i, J in enumerate(self.joints):
             J.transform(T_list[i])
         for i, L in enumerate(self.links):
-            T_links = np.concatenate(([np.eye(4)], T_list[:-1])) #Transform links after joint
+            T_links = np.concatenate(([np.eye(4)], T_list[:-1])) #Displace links with T of preceeding joint
             L.transform(T_links[i])
+        if self.endEffectorObject: 
+            self.endEffectorObject.transform(T_list[-1]*self.Tnb) #Displace endeffector
 
     def draw_robot(self):  # Draws all o3d objects in robotObjects list
         draw(self.robotObjects)
