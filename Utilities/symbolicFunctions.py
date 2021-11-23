@@ -41,8 +41,6 @@ def Ad(T):
     return AdT
 
 def calc_v(omega_mat, q_mat):
-    #omega_mat and q_mat of type matrix with q_i & omega_i as columns
-    #Returns v_mat in same type/format
     assert len(omega_mat) == len(q_mat)
     
     n_joints = omega_mat.shape[1] 
@@ -52,8 +50,13 @@ def calc_v(omega_mat, q_mat):
         v_mat[:,i] = (-skew(omega_mat.col(i)) * q_mat.col(i))
     return v_mat
 
-def Slist_maker(omega_mat, q_mat): #omega_mat and q_mat of type matrix with q_i & omega_i as columns
-    #Returns v_mat in same type/format
+def Slist_maker(omega_mat, q_mat): 
+    """
+    Calculates Slist from omega's and q's\n
+    PARAMETERS:
+    omega_mat & q_mat: of type sp.Matrix with q_i & omega_i as columns
+    RETURNS: Slist as sp.Matrix with Si as coloumns
+    """
     v_mat = calc_v(omega_mat, q_mat)    
     n_joints = omega_mat.shape[1]
     Slist = sp.zeros(6, n_joints)
