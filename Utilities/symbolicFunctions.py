@@ -106,6 +106,7 @@ def Jb_maker(Blist, theta_list):
 
 
 
+
 #____DH-functions____
 
 def rotX(alfa_im1):
@@ -134,6 +135,36 @@ def transZ(d_i):
     trA[2,3] =  d_i
     return trA
 
+th1, th2, th3, th4, th5, th6 = dynamicsymbols('theta_1, theta_2, theta_3, theta_4, theta_5, theta_6')
+al1,al2,al3,al4,al5,al6,al7 = sp.symbols('alpha_1,alpha_2,alpha_3,alpha_4,alpha_5,alpha_6,alpha_7,')
+
+def A1_sym(th_i, d_i):
+    ct = sp.cos(th_i)
+    st = sp.sin(th_i)
+    A1 = sp.Matrix([[ct, -st, 0.0, 0.0], [st, ct, 0.0, 0.0], [0.0, 0.0, 1, d_i], [0.0, 0.0, 0.0, 1]])
+    return A1
+def A2_sym(al_i, a_i):
+    ca = sp.cos(al_i)
+    sa = sp.sin(al_i)
+    A2 = sp.Matrix([[1, 0.0, 0.0, a_i], [0.0, ca, -sa, 0.0], [0.0, sa, ca, 0.0], [0.0, 0.0, 0.0, 1]])
+    return A2
+
+def T_from_sic(config):
+    n = len(config.col(0))
+    Alist = [sp.zeros(4,4)]*n
+    Tlist = [sp.zeros(4,4)]*n
+    for i in range(n):
+        al_i = config[i,1]
+        a_i = config[i,0]
+        d_i = config[i,2]
+        th_i = config[i,3]
+        Alist[i] = A1_sym(th_i, d_i) * A2_sym(al_i, a_i)
+
+        T = sp.eye(4)
+        for j in range(i):
+            T = T * Alist[j]
+        Tlist[i] = T
+    return Tlist
 
 #IK functions
 def ps_from_Tsd(T_sd):
