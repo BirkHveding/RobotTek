@@ -37,7 +37,7 @@ def calc_v(omega_mat, q_mat):
 
 
 
-M1=sp.Matrix([[0, 1, 0, 0],
+M1=sp.Matrix([[0, 1, 0, 0], #Joint 1
              [1, 0, 0, 0],
              [0, 0, -1, 200],
              [0, 0, 0, 1]])
@@ -51,19 +51,24 @@ M3=sp.Matrix([[1, 0, 0, 455+25],
              [0, 0, 1, 0],
              [0, -1, 0, 400],
              [0, 0, 0, 1]])
-M4=sp.Matrix([[0, 0, -1, 455+25+420],
+M4=sp.Matrix([[0, 0, -1, 455+25+200],
              [0, 1, 0, 0],
-             [1, 0, 0, 400],
+             [1, 0, 0, 400+35],
              [0, 0, 0, 1]])
 M5=sp.Matrix([[1, 0, 0, 455+25+420],
              [0, 0, 1, 0],
-             [0, -1, 0, 400],
+             [0, -1, 0, 400+35],
              [0, 0, 0, 1]])
-M6=sp.Matrix([[0, 0, -1, 455+25+420+50], ##OBS lagt til 50 for å se endeffector
+M6=sp.Matrix([[0, 0, -1, 455+25+420], #Joint 6
              [0, 1, 0, 0],
-             [1, 0, 0, 400],
+             [1, 0, 0, 400+35],
              [0, 0, 0, 1]])
 Mlist = np.array([M1,M2,M3,M4,M5,M6], dtype=float)
+
+Tnb = sp.Matrix([[0,0,1,0], #Constant transformation matrix from joint 6 to endeffector
+                  [0,1,0,0],
+                  [-1,0,0,-80],
+                  [0,0,0,1]])
 
 om = sp.zeros(3,6)
 om1 = om[:, 0] = M1[:3, 2]
@@ -80,7 +85,7 @@ q4 = q[:,3] = M4[:3, 3]
 q5 = q[:,4] = M5[:3, 3]
 q6 = q[:,5] = M6[:3, 3]
 
-Slist = Slist_maker(om,q)
+Slist = np.array(Slist_maker(om,q),dtype=float)
 S1 = Slist[:,0]
 S2 = Slist[:,1]
 S3 = Slist[:,2]
