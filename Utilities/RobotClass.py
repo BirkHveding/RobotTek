@@ -51,7 +51,7 @@ class Robot:
     '''
 
     def __init__(self, Mlist, link_orient='x', endEffectorOffset=sp.Matrix(sp.eye(4))):
-        self.robotObjects = [o3d.geometry.TriangleMesh.create_coordinate_frame(size=80)]  # Initated with {s}-frame coord-frame
+        self.robotObjects = [o3d.geometry.TriangleMesh.create_coordinate_frame(size=85)]  # Initated with {s}-frame coord-frame
         self.current_config = Mlist  # list of T's giving pose for all joints
         self.Mlist = Mlist
         self.num_joints = len(Mlist)
@@ -90,7 +90,7 @@ class Robot:
         #Creates endeffector frame if Te != Tn
         if self.Tne != sp.Matrix(sp.eye(4)): # True if endeffector-offset is given
             self.endEffectorObject = o3d.geometry.TriangleMesh.create_coordinate_frame(
-                size=50)
+                size=70)
             self.robotObjects.append(self.endEffectorObject)
         else:
             self.endEffectorObject = False
@@ -153,7 +153,7 @@ class Robot:
 class Joint(Robot):
     def __init__(self):
         self.joint = o3d.geometry.TriangleMesh.create_cylinder(
-            radius=15, height=40)
+            radius=20, height=50)
         self.coord = o3d.geometry.TriangleMesh.create_coordinate_frame(size=60)
         self.set_colour()
 
