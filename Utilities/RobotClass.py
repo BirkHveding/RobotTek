@@ -108,6 +108,8 @@ class Robot:
         for T in self.current_config:
             T_origin.append(mr.TransInv(T))
         self.__transform(T_origin)
+        if self.endEffectorObject:
+            self.endEffectorObject.transform(mr.TransInv(self.current_config[-1]*self.Tnb))
 
         return
 
@@ -127,7 +129,7 @@ class Robot:
         # Displace endeffector
         if self.endEffectorObject:
             self.endEffectorObject.transform(
-                T_list[-1]*self.Tnb,False)  
+                T_list[-1]*self.Tnb)  
 
         for i, J in enumerate(self.joints):
             J.transform(T_list[i])

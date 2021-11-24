@@ -1,7 +1,7 @@
 ############################
 #Kinematics for Kuka robot, includes:
 # M
-# Mlist - consisting of M for each joint as if it was the end-effector joint
+# Mlist - consisting of M for each joint as if it was the end-effector
 # Slist and S1-S6
 
 import sympy as sp
@@ -69,6 +69,7 @@ Tnb = sp.Matrix([[0,0,1,0], #Constant transformation matrix from joint 6 to ende
                   [0,1,0,0],
                   [-1,0,0,-80],
                   [0,0,0,1]])
+M = M6*Tnb
 
 om = sp.zeros(3,6)
 om1 = om[:, 0] = M1[:3, 2]
