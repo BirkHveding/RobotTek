@@ -127,7 +127,7 @@ class Robot:
         # Displace endeffector
         if self.endEffectorObject:
             self.endEffectorObject.transform(
-                T_list[-1]*self.Tnb,False)  
+                T_list[-1]*self.Tnb)  
 
         for i, J in enumerate(self.joints):
             J.transform(T_list[i])
