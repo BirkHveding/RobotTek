@@ -56,7 +56,7 @@ class Robot:
         self.Mlist = Mlist
         self.num_joints = len(Mlist)
         self.num_links = len(Mlist)
-        self.length_links = self.findLinkLengths(Mlist)
+        self.length_links = self.findLinkLengths()
         self.link_orient = ['x']*(self.num_links +
                                   1) if link_orient == 'x' else link_orient  # link attached to preceeding joints x-axis by default
         self.Tnb = endEffectorOffset
@@ -111,8 +111,8 @@ class Robot:
 
         return
 
-    def transform(self, Slist, thetas):
-        self.allToOrigin()
+    def transform(self, Slist, thetas): 
+        self.allToOrigin() # Because o3d transforms are relative to current pose of object
         T_list = []  # List to fill with T01,T02,T03...
         T = np.eye(4)
         for i in range(len(thetas)):
@@ -124,15 +124,18 @@ class Robot:
 
     # Moves all objects from {s} to config given by T_list
     def __transform(self, T_list): 
+        # Displace endeffector
+        if self.endEffectorObject:
+            self.endEffectorObject.transform(
+                T_list[-1]*self.Tnb,False)  
+
         for i, J in enumerate(self.joints):
             J.transform(T_list[i])
         for i, L in enumerate(self.links):
             # Displace links with T of preceeding joint
             T_links = np.concatenate(([np.eye(4)], T_list[:-1]))
             L.transform(T_links[i])
-        if self.endEffectorObject:
-            self.endEffectorObject.transform(
-                T_list[-1]*self.Tnb)  # Displace endeffector
+            
 
     # Draws all o3d objects in robotObjects list
     def draw_robot(self):  
