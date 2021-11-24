@@ -158,7 +158,7 @@ def T_from_sic(config):
         Alist[i] = A1_sym(th_i, d_i) * A2_sym(al_i, a_i)
 
         T = sp.eye(4)
-        for j in range(i):
+        for j in range(i+1):
             T = T * Alist[j]
         Tlist[i] = T
     return Tlist
