@@ -118,7 +118,7 @@ class Robot:
         for i in range(len(thetas)):
             T = T @ exp6(Slist[:, i], thetas[i])
             T_list.append(T* self.Mlist[i])
-        self.__transform(T_list, False)
+        self.__transform(T_list)
         self.current_config = T_list
         return
 
@@ -127,7 +127,7 @@ class Robot:
     def __transform(self, T_list, originCall=False): 
         # Displace endeffector
         if self.endEffectorObject: #T= Tes if called from allToOrigin
-            T = (mr.TransInv(self.Tne)*T_list[-1]) if originCall else T_list[-1]*self.Tne
+            T = (mr.TransInv(self.Tne)@T_list[-1]) if originCall else T_list[-1]*self.Tne
             self.endEffectorObject.transform(T) 
 
         for i, J in enumerate(self.joints):
