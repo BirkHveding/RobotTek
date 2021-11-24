@@ -135,9 +135,6 @@ def transZ(d_i):
     trA[2,3] =  d_i
     return trA
 
-th1, th2, th3, th4, th5, th6 = dynamicsymbols('theta_1, theta_2, theta_3, theta_4, theta_5, theta_6')
-al1,al2,al3,al4,al5,al6,al7 = sp.symbols('alpha_1,alpha_2,alpha_3,alpha_4,alpha_5,alpha_6,alpha_7,')
-
 def A1_sym(th_i, d_i):
     ct = sp.cos(th_i)
     st = sp.sin(th_i)
