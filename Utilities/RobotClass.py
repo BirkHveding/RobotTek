@@ -59,7 +59,7 @@ class Robot:
         self.length_links = self.findLinkLengths()
         self.link_orient = ['x']*(self.num_links +
                                   1) if link_orient == 'x' else link_orient  # link attached to preceeding joints x-axis by default
-        self.Tnb = endEffectorOffset
+        self.Tne = endEffectorOffset
 
         self.joints = []  # Elements of class Joint
         self.links = []  # Elements of class Link
@@ -87,8 +87,8 @@ class Robot:
         for i in range(self.num_links):
             self.links.append(Link(self.length_links[i], self.link_orient[i]))
 
-        #Creates endeffector frame if it's different from last joint-frame
-        if self.Tnb != sp.Matrix(sp.eye(4)): # True if endeffector-offset is given
+        #Creates endeffector frame if Te != Tn
+        if self.Tne != sp.Matrix(sp.eye(4)): # True if endeffector-offset is given
             self.endEffectorObject = o3d.geometry.TriangleMesh.create_coordinate_frame(
                 size=50)
             self.robotObjects.append(self.endEffectorObject)
@@ -108,13 +108,10 @@ class Robot:
         for T in self.current_config:
             T_origin.append(mr.TransInv(T))
         self.__transform(T_origin)
-        if self.endEffectorObject:
-            self.endEffectorObject.transform(mr.TransInv(self.current_config[-1]*self.Tnb))
-
         return
 
     def transform(self, Slist, thetas): 
-        self.allToOrigin() # Because o3d transforms are relative to current pose of object
+        self.allToOrigin() # o3d interpret transforms as relative to current pose of object
         T_list = []  # List to fill with T01,T02,T03...
         T = np.eye(4)
         for i in range(len(thetas)):
@@ -128,8 +125,9 @@ class Robot:
     def __transform(self, T_list): 
         # Displace endeffector
         if self.endEffectorObject:
+            # self.endEffectorObject.transform(mr.TransInv(self.current_config[-1]*self.Tne)) #T = Tse^-1
             self.endEffectorObject.transform(
-                T_list[-1]*self.Tnb)  
+                T_list[-1]*self.Tne)
 
         for i, J in enumerate(self.joints):
             J.transform(T_list[i])
@@ -140,8 +138,14 @@ class Robot:
             
 
     # Draws all o3d objects in robotObjects list
-    def draw_robot(self):  
-        draw(self.robotObjects)
+    def draw_robot(self, method = 1):
+        '''method 1: Draws in Jupyter cell-output
+        method 2: Draws in own window'''
+        if method == 1:
+            draw(self.robotObjects)
+        elif method == 2:
+            o3d.visualization.draw_geometries(self.robotObjects)
+
 
 #______________Joint Class_______________#
 
@@ -149,11 +153,11 @@ class Robot:
 class Joint(Robot):
     def __init__(self):
         self.joint = o3d.geometry.TriangleMesh.create_cylinder(
-            radius=15, height=35)
-        self.coord = o3d.geometry.TriangleMesh.create_coordinate_frame(size=50)
+            radius=15, height=30)
+        self.coord = o3d.geometry.TriangleMesh.create_coordinate_frame(size=60)
         self.set_colour()
 
-    def set_colour(self, colour=[0, 0, 0]):
+    def set_colour(self, colour=[0.4, 0.4, 0.4]):
         self.joint.paint_uniform_color(colour)
 
     def transform(self, T):
