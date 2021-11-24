@@ -1,3 +1,4 @@
+from modern_robotics.core import TransInv
 import open3d as o3d
 import numpy as np
 import modern_robotics as mr
@@ -46,7 +47,7 @@ class Robot:
     ## Parameters:\n
     Mlist: Pose of all joints in zero-config as homogenous transformation\n
     link_orient: list, axis of preceeding joints frame to attach links (including link from ground to joint1) ex: ['z', '-z', 'x', 'x', 'z','x']\n
-    endEffectorOffset: T, offset of endeffector from last link, given as a Homogeneous transformation matrix. Default no offset
+    endEffectorOffset: T, offset of endeffector from last link, given as a Homogeneous transformation matrix. Default Te=Tn
     '''
 
     def __init__(self, Mlist, link_orient='x', endEffectorOffset=sp.Matrix(sp.eye(4))):
@@ -67,7 +68,7 @@ class Robot:
         self.update_mesh_list() # Update robotObject list (only objects in list will be drawn)
         self.__transform(Mlist) # Transforms all objects from {s} to zero-config
 
-# Calculates link lengths based on M
+    # Calculates link lengths based on Mlist
     def findLinkLengths(self):
         linkLengths = np.zeros(self.num_links)
 
@@ -107,7 +108,7 @@ class Robot:
         T_origin = []
         for T in self.current_config:
             T_origin.append(mr.TransInv(T))
-        self.__transform(T_origin)
+        self.__transform(T_origin, originCall=True)
         return
 
     def transform(self, Slist, thetas): 
@@ -116,18 +117,18 @@ class Robot:
         T = np.eye(4)
         for i in range(len(thetas)):
             T = T @ exp6(Slist[:, i], thetas[i])
-            T_list.append(T*self.Mlist[i])
-        self.__transform(T_list)
+            T_list.append(T* self.Mlist[i])
+        self.__transform(T_list, False)
         self.current_config = T_list
         return
 
+
     # Moves all objects from {s} to config given by T_list
-    def __transform(self, T_list): 
+    def __transform(self, T_list, originCall=False): 
         # Displace endeffector
-        if self.endEffectorObject:
-            # self.endEffectorObject.transform(mr.TransInv(self.current_config[-1]*self.Tne)) #T = Tse^-1
-            self.endEffectorObject.transform(
-                T_list[-1]*self.Tne)
+        if self.endEffectorObject: #T= Tes if called from allToOrigin
+            T = (mr.TransInv(self.Tne)*T_list[-1]) if originCall else T_list[-1]*self.Tne
+            self.endEffectorObject.transform(T) 
 
         for i, J in enumerate(self.joints):
             J.transform(T_list[i])
