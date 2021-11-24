@@ -51,8 +51,7 @@ class Robot:
     '''
 
     def __init__(self, Mlist, link_orient='x', endEffectorOffset=sp.Matrix(sp.eye(4))):
-        self.robotObjects = [o3d.geometry.TriangleMesh.create_coordinate_frame(
-            size=75)]  # Initated with {s}-frame coord-frame
+        self.robotObjects = [o3d.geometry.TriangleMesh.create_coordinate_frame(size=80)]  # Initated with {s}-frame coord-frame
         self.current_config = Mlist  # list of T's giving pose for all joints
         self.Mlist = Mlist
         self.num_joints = len(Mlist)
@@ -154,11 +153,11 @@ class Robot:
 class Joint(Robot):
     def __init__(self):
         self.joint = o3d.geometry.TriangleMesh.create_cylinder(
-            radius=15, height=30)
+            radius=15, height=40)
         self.coord = o3d.geometry.TriangleMesh.create_coordinate_frame(size=60)
         self.set_colour()
 
-    def set_colour(self, colour=[0.4, 0.4, 0.4]):
+    def set_colour(self, colour=[0.35, 0.35, 0.35]):
         self.joint.paint_uniform_color(colour)
 
     def transform(self, T):
