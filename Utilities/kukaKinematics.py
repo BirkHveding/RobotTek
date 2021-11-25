@@ -1,7 +1,7 @@
 ############################
 #Kinematics for Kuka robot, includes:
 # M
-# Mlist - consisting of M for each joint as if it was the end-effector joint
+# Mlist - consisting of M for each joint as if it was the end-effector
 # Slist and S1-S6
 
 import sympy as sp
@@ -36,8 +36,10 @@ def calc_v(omega_mat, q_mat):
     return v_mat
 
 
+#____Mlist____
+#Determined by visual inspection - consisting of M for each joint as if it was the end-effector
 
-M1=sp.Matrix([[0, 1, 0, 0],
+M1=sp.Matrix([[0, 1, 0, 0], #Joint 1
              [1, 0, 0, 0],
              [0, 0, -1, 200],
              [0, 0, 0, 1]])
@@ -51,7 +53,7 @@ M3=sp.Matrix([[1, 0, 0, 455+25],
              [0, 0, 1, 0],
              [0, -1, 0, 400],
              [0, 0, 0, 1]])
-M4=sp.Matrix([[0, 0, -1, 455+25+200], #420
+M4=sp.Matrix([[0, 0, -1, 455+25+200],
              [0, 1, 0, 0],
              [1, 0, 0, 400+35],
              [0, 0, 0, 1]])
@@ -59,12 +61,25 @@ M5=sp.Matrix([[1, 0, 0, 455+25+420],
              [0, 0, 1, 0],
              [0, -1, 0, 400+35],
              [0, 0, 0, 1]])
-M6=sp.Matrix([[0, 0, -1, 455+25+420+80], ##OBS lagt til 50 for å se endeffector
+M6=sp.Matrix([[0, 0, -1, 455+25+420], #Joint 6
              [0, 1, 0, 0],
              [1, 0, 0, 400+35],
              [0, 0, 0, 1]])
 Mlist = np.array([M1,M2,M3,M4,M5,M6], dtype=float)
 
+Tne = sp.Matrix([[0,0,1,0], #Constant transformation matrix from {6} to endeffector
+                  [0,1,0,0],
+                  [-1,0,0,-80],
+                  [0,0,0,1]])
+Tnb = sp.Matrix([[0,0,1,0], #Constant transformation matrix from {6} to {b} 
+                  [0,1,0,0],
+                  [-1,0,0,0],
+                  [0,0,0,1]])
+
+Me = M6*Tne # M-matrix for endeffector offset by 80mm from joint6
+
+#___Slist____
+#Found visually
 om = sp.zeros(3,6)
 om1 = om[:, 0] = M1[:3, 2]
 om2 = om[:, 1] = M2[:3, 2]
@@ -87,3 +102,24 @@ S3 = Slist[:,2]
 S4 = Slist[:,3]
 S5 = Slist[:,4]
 S6 = Slist[:,5]
+
+#____Blist____ 
+# Found visually with {b}'s position like {6}, oriented like {s}
+om = sp.zeros(3, 6)
+om6 = om[:, 5] = sp.Matrix([-1,0,0])
+om5 = om[:, 4] = sp.Matrix([0,1,0])
+om4 = om[:, 3] = sp.Matrix([-1,0,0])
+om3 = om[:, 2] = sp.Matrix([0,1,0])
+om2 = om[:, 1] = sp.Matrix([0,1,0])
+om1 = om[:, 0] = sp.Matrix([0,0,-1])
+
+q = sp.zeros(3,6)
+q6 = q[:,5] = sp.Matrix([0,0,0])
+q5 = q[:,4] = sp.Matrix([0,0,0])
+q4 = q[:,3] = sp.Matrix([0,0,0])
+q3 = q[:,2] = sp.Matrix([-420,0,-35])
+q2 = q[:,1] = sp.Matrix([-420-455,0,-35])
+q1 = q[:,0] = sp.Matrix([-420-455-25,0,-435])
+
+
+Blist = Slist_maker(om,q)
