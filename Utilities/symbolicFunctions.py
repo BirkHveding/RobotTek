@@ -243,15 +243,18 @@ def agilus_analytical_IK(Slist,M,T_sd):
     """
     Computes the analytical inverse kinematics of the Agilus 6R robot.
     PARAMETERS:
+    M: The home configuration
+    Slist: An array with screw axes as columns
     Tsd: The desired end-effector pose
-    RETURNS: float arrays of joint values, elbow up and elbow down.
+    RETURNS: two float arrays of joint values, elbow up and elbow down.
     """
     thetas_up = [0,0,0,0,0,0]
     thetas_down = [0,0,0,0,0,0]
     Ps = ps_from_Tsd(T_sd)
 
     # Theta 1
-    thetas_up[0] = float(sp.N(-sp.atan2(Ps[1],Ps[0])))  # Minus sign since the axis of rotation is defined as -z.
+
+    thetas_up[0] = float(sp.N(-sp.atan2(Ps[1],Ps[0]))) # Minus sign since the axis of rotation is defined as -z.
     thetas_down[0] = thetas_up[0]
 
     # Thetas 2,3
