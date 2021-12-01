@@ -86,24 +86,17 @@ def Js_maker(Slist, theta_list):
     Js.simplify()
     return Js
 
-def Jb_maker(Blist, theta_list):
-    n_joints = Blist.shape[1] - 1
-    Jb = sp.zeros(6, 6)
-    print(n_joints)
-    
-    Jb[:,n_joints] = Blist[:,n_joints] # Jb[n] = B[n]
-    
-    for i in range(n_joints-1, -1, -1):
-        T = sp.eye(4)#exp6(Blist[:,i], -theta_list[i])
-        print("i",i)
-        for j in range( i+1, n_joints+1):
-            T = exp6(Blist[:,j], -theta_list[j]) * T
-            print("j",j)
-        Jb[:,i] = Ad(T) * Blist[:,i]
-        print("\n")
+th1, th2, th3, th4, th5, th6 = sp.dynamicsymbols('theta_1, theta_2, theta_3, theta_4, theta_5, theta_6')
+def Jb_maker6x6(Blist): #Foreløpig for 6x6, fikset!
+    Jb = sp.zeros(6,6)
+    Jb[:,5] =  Blist[:,5]
+    Jb[:,4] =  Ad(exp6(-Blist[:,5], th6)) * Blist[:,4]
+    Jb[:,3] =  Ad(exp6(-Blist[:,5], th6) * exp6(-Blist[:,4], th5)) * Blist[:,3]
+    Jb[:,2] =  Ad(exp6(-Blist[:,5], th6) * exp6(-Blist[:,4], th5) * exp6(-Blist[:,3], th4)) * Blist[:,2]
+    Jb[:,1] =  Ad(exp6(-Blist[:,5], th6) * exp6(-Blist[:,4], th5) * exp6(-Blist[:,3], th4) * exp6(-Blist[:,2], th3)) * Blist[:,1]
+    Jb[:,0] =  Ad(exp6(-Blist[:,5], th6) * exp6(-Blist[:,4], th5) * exp6(-Blist[:,3], th4) * exp6(-Blist[:,2], th3) * exp6(-Blist[:,1], th2)) * Blist[:,0]
     
     return Jb
-
 
 
 
@@ -253,7 +246,6 @@ def agilus_analytical_IK(Slist,M,T_sd):
     Ps = ps_from_Tsd(T_sd)
 
     # Theta 1
-
     thetas_up[0] = float(sp.N(-sp.atan2(Ps[1],Ps[0]))) # Minus sign since the axis of rotation is defined as -z.
     thetas_down[0] = thetas_up[0]
 
