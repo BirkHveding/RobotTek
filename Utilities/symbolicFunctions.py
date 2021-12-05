@@ -1,5 +1,7 @@
 import sympy as sp
 import numpy as np
+from sympy.physics.mechanics import dynamicsymbols, mechanics_printing
+mechanics_printing()
 
 def Ry_sym(theta):
     ct = sp.cos(theta)
@@ -86,7 +88,7 @@ def Js_maker(Slist, theta_list):
     Js.simplify()
     return Js
 
-th1, th2, th3, th4, th5, th6 = sp.dynamicsymbols('theta_1, theta_2, theta_3, theta_4, theta_5, theta_6')
+th1, th2, th3, th4, th5, th6 = dynamicsymbols('theta_1, theta_2, theta_3, theta_4, theta_5, theta_6')
 def Jb_maker6x6(Blist): #Foreløpig for 6x6, fikset!
     Jb = sp.zeros(6,6)
     Jb[:,5] =  Blist[:,5]
@@ -151,7 +153,7 @@ def T_from_sic(config):
         Alist[i] = A1_sym(th_i, d_i) * A2_sym(al_i, a_i)
 
         T = sp.eye(4)
-        for j in range(i):
+        for j in range(i+1):
             T = T * Alist[j]
         Tlist[i] = T
     return Tlist
