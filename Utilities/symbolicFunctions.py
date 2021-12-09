@@ -160,7 +160,7 @@ def T_from_sic(config):
 
 #IK functions
 def ps_from_Tsd(T_sd):
-    P_d = np.array([0,0,80,1])
+    P_d = np.array([-80,0,0,1])
     P_s = T_sd@P_d
     return P_s
 
